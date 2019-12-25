@@ -63,8 +63,4 @@ module.exports = class extends Generator {
       this.fs.copy(this.templatePath("main.cpp"), destPath);
     }
   }
-
-  install() {
-    this.installDependencies();
-  }
 };
