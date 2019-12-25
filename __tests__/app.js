@@ -10,6 +10,36 @@ describe("generator-pitchfork:app", () => {
     runContext = helpers.run(path.join(__dirname, "../generators/app"));
   });
 
+  describe("Project Name", () => {
+    it("uses the directory name as the project name", async () => {
+      let dirName;
+      await runContext.inTmpDir(dir => {
+        dirName = path.basename(dir);
+      });
+
+      assert.fileContent("README.md", `# ${dirName}`);
+    });
+
+    it("uses the prompt answer as the project name", async () => {
+      await runContext.withPrompts({
+        projectName: "Test Project"
+      });
+
+      assert.fileContent("README.md", "# Test Project");
+    });
+  });
+
+  describe("Project Description", () => {
+    it("uses the prompt answer as the project description", async () => {
+      await runContext.withPrompts({
+        projectName: "Test Project",
+        projectDescription: "Project Description."
+      });
+
+      assert.fileContent("README.md", "# Test Project\n\nProject Description.");
+    });
+  });
+
   describe("Submodules", () => {
     it("creates a library project without submodules", async () => {
       await runContext.withPrompts({

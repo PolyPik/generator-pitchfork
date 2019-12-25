@@ -13,6 +13,17 @@ module.exports = class extends Generator {
 
     const prompts = [
       {
+        type: "input",
+        name: "projectName",
+        message: "What's the name of your project?",
+        default: this.determineAppname()
+      },
+      {
+        type: "input",
+        name: "projectDescription",
+        message: "Give a brief description of your project."
+      },
+      {
         type: "list",
         name: "projectType",
         message: "What type of project do you wish to create?",
@@ -44,6 +55,15 @@ module.exports = class extends Generator {
   }
 
   writing() {
+    this.fs.copyTpl(
+      this.templatePath("README.md.ejs"),
+      this.destinationPath("README.md"),
+      {
+        projectName: this.props.projectName,
+        projectDescription: this.props.projectDescription
+      }
+    );
+
     if (this.props.projectType === "Library Project") {
       if (this.props.usingSubmodules || this.props.separateHeaders) {
         mkdir("include");
