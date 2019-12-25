@@ -36,6 +36,7 @@ describe("generator-pitchfork:app", () => {
       });
 
       assert.file("src/main.cpp");
+      assert.noFile("include");
     });
 
     it("creates an application project with submodules", async () => {
@@ -45,6 +46,7 @@ describe("generator-pitchfork:app", () => {
       });
 
       assert.file("libs/main/src/main.cpp");
+      assert.noFile("include");
     });
   });
 

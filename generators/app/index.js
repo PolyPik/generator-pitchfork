@@ -30,7 +30,10 @@ module.exports = class extends Generator {
         name: "separateHeaders",
         message:
           "Do you want to place the public headers in a separate directory?",
-        default: false
+        default: false,
+        when(answers) {
+          return answers.projectType === "Library Project";
+        }
       }
     ];
 
