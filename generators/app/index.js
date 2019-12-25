@@ -11,18 +11,21 @@ module.exports = class extends Generator {
     // Have Yeoman greet the user.
     this.log(yosay("Please answer the following questions."));
 
-    const prompts = [
+    const infoPrompts = [
       {
         type: "input",
         name: "projectName",
-        message: "What's the name of your project?",
+        message: "Project Name:",
         default: this.determineAppname()
       },
       {
         type: "input",
         name: "projectDescription",
-        message: "Give a brief description of your project."
-      },
+        message: "Project Description:"
+      }
+    ];
+
+    const configPrompts = [
       {
         type: "list",
         name: "projectType",
@@ -48,10 +51,20 @@ module.exports = class extends Generator {
       }
     ];
 
-    return this.prompt(prompts).then(props => {
-      // To access props later use this.props.someAnswer;
-      this.props = props;
-    });
+    this.log("Project Info");
+
+    return this.prompt(infoPrompts)
+      .then(props => {
+        // To access props later use this.props.someAnswer;
+        this.props = props;
+
+        this.log("Project Config");
+
+        return this.prompt(configPrompts);
+      })
+      .then(props => {
+        this.props = { ...this.props, ...props };
+      });
   }
 
   writing() {
