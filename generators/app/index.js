@@ -69,23 +69,28 @@ module.exports = class extends Generator {
   }
 
   async writing() {
+    const {
+      projectName,
+      projectDescription,
+      projectType,
+      usingSubmodules,
+      separateHeaders
+    } = this.props;
+
     this.fs.copyTpl(
       this.templatePath("README.md.ejs"),
       this.destinationPath("README.md"),
-      {
-        projectName: this.props.projectName,
-        projectDescription: this.props.projectDescription
-      }
+      { projectName, projectDescription }
     );
 
-    const rootDir = this.props.usingSubmodules ? "libs/submodule" : "";
+    const rootDir = usingSubmodules ? "libs/submodule" : "";
 
-    if (this.props.projectType === "Library Project") {
+    if (projectType === "Library Project") {
       const fsPromises = [
         mkdir(path.join(rootDir, "src"), { recursive: true })
       ];
 
-      if (this.props.separateHeaders) {
+      if (separateHeaders) {
         fsPromises.push(
           mkdir(path.join(rootDir, "include"), { recursive: true })
         );
