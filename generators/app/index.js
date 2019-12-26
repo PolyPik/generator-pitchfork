@@ -1,10 +1,7 @@
 "use strict";
 const Generator = require("yeoman-generator");
 const yosay = require("yosay");
-const fs = require("fs");
-
-const { promisify } = require("util");
-const mkdir = promisify(fs.mkdir);
+const path = require("path");
 
 module.exports = class extends Generator {
   prompting() {
@@ -30,8 +27,26 @@ module.exports = class extends Generator {
         type: "list",
         name: "artifactType",
         message: "What type of artifact will this project produce?",
-        choices: ["Library", "Executable"],
+        choices: ["Library", "Application"],
         default: "Library"
+      },
+      {
+        type: "input",
+        name: "artifactName",
+        message(answers) {
+          if (answers.artifactType === "Library") {
+            return "What's the name of the library artifact?";
+          }
+
+          return "What's the name of the executable artifact?";
+        },
+        default(answers) {
+          if (answers.artifactType === "Library") {
+            return "mylib";
+          }
+
+          return "myapp";
+        }
       },
       {
         type: "confirm",
@@ -66,6 +81,7 @@ module.exports = class extends Generator {
       projectName,
       projectDescription,
       artifactType,
+      artifactName,
       separateHeaders
     } = this.props;
 
@@ -76,13 +92,19 @@ module.exports = class extends Generator {
     );
 
     if (artifactType === "Library") {
-      const fsPromises = [mkdir("src")];
+      const headerDir = separateHeaders ? "include" : "src";
 
-      if (separateHeaders) {
-        fsPromises.push(mkdir("include"));
-      }
+      this.fs.copyTpl(
+        this.templatePath("lib.h.ejs"),
+        this.destinationPath(path.join(headerDir, `${artifactName}.h`)),
+        { headerGuardName: `${artifactName.replace("-", "_").toUpperCase()}_H` }
+      );
 
-      await Promise.all(fsPromises);
+      this.fs.copyTpl(
+        this.templatePath("lib.cpp.ejs"),
+        this.destinationPath(`src/${artifactName}.cpp`),
+        { headerName: `${artifactName}.h` }
+      );
     } else {
       this.fs.copy(
         this.templatePath("main.cpp"),

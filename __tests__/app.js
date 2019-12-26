@@ -40,17 +40,41 @@ describe("generator-pitchfork:app", () => {
     });
   });
 
-  describe("Library Header Placement", () => {
+  describe("Library Project", () => {
     it("creates a library project with merged header placement", async () => {
-      await runContext.withPrompts({ separateHeaders: false });
+      await runContext.withPrompts({
+        artifactType: "Library",
+        artifactName: "test",
+        separateHeaders: false
+      });
 
-      assert.noFile("include");
+      assert.noFile("include/test.h");
+      assert.file("src/test.h");
+      assert.file("src/test.cpp");
     });
 
     it("creates a library project with separated header placement", async () => {
-      await runContext.withPrompts({ separateHeaders: true });
+      await runContext.withPrompts({
+        artifactType: "Library",
+        artifactName: "test",
+        separateHeaders: true
+      });
 
-      assert.file("include");
+      assert.file("include/test.h");
+      assert.noFile("src/test.h");
+      assert.file("src/test.cpp");
+    });
+  });
+
+  describe("Application Project", () => {
+    it("creates an application project", async () => {
+      await runContext.withPrompts({
+        artifactType: "Application",
+        artifactName: "test"
+      });
+
+      assert.noFile("include");
+      assert.file("src/main.cpp");
     });
   });
 });
