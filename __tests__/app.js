@@ -41,42 +41,20 @@ describe("generator-pitchfork:app", () => {
   });
 
   describe("Submodules", () => {
-    it("creates a library project without submodules", async () => {
+    it("creates a project without submodules", async () => {
       await runContext.withPrompts({
-        projectType: "Library Project",
         usingSubmodules: false
       });
 
       assert.file("src");
     });
 
-    it("creates a library project with submodules", async () => {
+    it("creates a project with submodules", async () => {
       await runContext.withPrompts({
-        projectType: "Library Project",
         usingSubmodules: true
       });
 
-      assert.file(["libs", "include"]);
-    });
-
-    it("creates an application project without submodules", async () => {
-      await runContext.withPrompts({
-        projectType: "Application Project",
-        usingSubmodules: false
-      });
-
-      assert.file("src/main.cpp");
-      assert.noFile("include");
-    });
-
-    it("creates an application project with submodules", async () => {
-      await runContext.withPrompts({
-        projectType: "Application Project",
-        usingSubmodules: true
-      });
-
-      assert.file("libs/main/src/main.cpp");
-      assert.noFile("include");
+      assert.file("libs/submodule/src");
     });
   });
 

@@ -2,6 +2,7 @@
 const Generator = require("yeoman-generator");
 const yosay = require("yosay");
 const fs = require("fs");
+const path = require("path");
 
 const { promisify } = require("util");
 const mkdir = promisify(fs.mkdir);
@@ -36,7 +37,7 @@ module.exports = class extends Generator {
       {
         type: "confirm",
         name: "usingSubmodules",
-        message: "Will this project be using submodules?",
+        message: "Will this project use submodules?",
         default: false
       },
       {
@@ -67,7 +68,7 @@ module.exports = class extends Generator {
       });
   }
 
-  writing() {
+  async writing() {
     this.fs.copyTpl(
       this.templatePath("README.md.ejs"),
       this.destinationPath("README.md"),
@@ -77,26 +78,25 @@ module.exports = class extends Generator {
       }
     );
 
+    const rootDir = this.props.usingSubmodules ? "libs/submodule" : "";
+
     if (this.props.projectType === "Library Project") {
-      if (this.props.usingSubmodules || this.props.separateHeaders) {
-        mkdir("include");
+      const fsPromises = [
+        mkdir(path.join(rootDir, "src"), { recursive: true })
+      ];
+
+      if (this.props.separateHeaders) {
+        fsPromises.push(
+          mkdir(path.join(rootDir, "include"), { recursive: true })
+        );
       }
 
-      if (this.props.usingSubmodules) {
-        mkdir("libs");
-      } else {
-        mkdir("src");
-      }
+      await Promise.all(fsPromises);
     } else {
-      let destPath;
-
-      if (this.props.usingSubmodules) {
-        destPath = this.destinationPath("libs/main/src/main.cpp");
-      } else {
-        destPath = this.destinationPath("src/main.cpp");
-      }
-
-      this.fs.copy(this.templatePath("main.cpp"), destPath);
+      this.fs.copy(
+        this.templatePath("main.cpp"),
+        this.destinationPath(path.join(rootDir, "src/main.cpp"))
+      );
     }
   }
 };
