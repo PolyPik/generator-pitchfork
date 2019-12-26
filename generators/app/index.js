@@ -2,7 +2,6 @@
 const Generator = require("yeoman-generator");
 const yosay = require("yosay");
 const fs = require("fs");
-const path = require("path");
 
 const { promisify } = require("util");
 const mkdir = promisify(fs.mkdir);
@@ -29,16 +28,10 @@ module.exports = class extends Generator {
     const configPrompts = [
       {
         type: "list",
-        name: "projectType",
-        message: "What type of project do you wish to create?",
-        choices: ["Library Project", "Application Project"],
-        default: "Library Project"
-      },
-      {
-        type: "confirm",
-        name: "usingSubmodules",
-        message: "Will this project use submodules?",
-        default: false
+        name: "artifactType",
+        message: "What type of artifact will this project produce?",
+        choices: ["Library", "Executable"],
+        default: "Library"
       },
       {
         type: "confirm",
@@ -47,7 +40,7 @@ module.exports = class extends Generator {
           "Do you want to place the public headers in a separate directory?",
         default: false,
         when(answers) {
-          return answers.projectType === "Library Project";
+          return answers.artifactType === "Library";
         }
       }
     ];
@@ -72,8 +65,7 @@ module.exports = class extends Generator {
     const {
       projectName,
       projectDescription,
-      projectType,
-      usingSubmodules,
+      artifactType,
       separateHeaders
     } = this.props;
 
@@ -83,24 +75,18 @@ module.exports = class extends Generator {
       { projectName, projectDescription }
     );
 
-    const rootDir = usingSubmodules ? "libs/submodule" : "";
-
-    if (projectType === "Library Project") {
-      const fsPromises = [
-        mkdir(path.join(rootDir, "src"), { recursive: true })
-      ];
+    if (artifactType === "Library") {
+      const fsPromises = [mkdir("src")];
 
       if (separateHeaders) {
-        fsPromises.push(
-          mkdir(path.join(rootDir, "include"), { recursive: true })
-        );
+        fsPromises.push(mkdir("include"));
       }
 
       await Promise.all(fsPromises);
     } else {
       this.fs.copy(
         this.templatePath("main.cpp"),
-        this.destinationPath(path.join(rootDir, "src/main.cpp"))
+        this.destinationPath("src/main.cpp")
       );
     }
   }

@@ -40,24 +40,6 @@ describe("generator-pitchfork:app", () => {
     });
   });
 
-  describe("Submodules", () => {
-    it("creates a project without submodules", async () => {
-      await runContext.withPrompts({
-        usingSubmodules: false
-      });
-
-      assert.file("src");
-    });
-
-    it("creates a project with submodules", async () => {
-      await runContext.withPrompts({
-        usingSubmodules: true
-      });
-
-      assert.file("libs/submodule/src");
-    });
-  });
-
   describe("Library Header Placement", () => {
     it("creates a library project with merged header placement", async () => {
       await runContext.withPrompts({ separateHeaders: false });
