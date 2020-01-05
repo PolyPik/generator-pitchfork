@@ -40,6 +40,69 @@ describe("generator-pitchfork:app", () => {
     });
   });
 
+  describe("License", () => {
+    it("uses the MIT license as the default license", async () => {
+      await runContext;
+
+      assert.fileContent("LICENSE", /.*MIT License.*/);
+    });
+
+    it("uses the prompt answer for selecting a project license", async () => {
+      await runContext.withPrompts({
+        license: "Apache-2.0"
+      });
+
+      assert.fileContent("LICENSE", /.*Apache License, Version 2\.0.*/);
+    });
+
+    it("only adds the owner's name to the license file", async () => {
+      await runContext.withPrompts({
+        ownerName: "John Doe",
+        ownerEmailYN: false,
+        ownerWebsiteYN: false
+      });
+
+      assert.fileContent("LICENSE", /.*John Doe\n.*/);
+    });
+
+    it("adds the owner's name and email address to the license file", async () => {
+      await runContext.withPrompts({
+        ownerName: "John Doe",
+        ownerEmailYN: true,
+        ownerEmail: "jdoe@example.com",
+        ownerWebsiteYN: false
+      });
+
+      assert.fileContent("LICENSE", /.*John Doe <jdoe@example\.com>.*/);
+    });
+
+    it("adds the owner's name and website URL to the license file", async () => {
+      await runContext.withPrompts({
+        ownerName: "John Doe",
+        ownerEmailYN: false,
+        ownerWebsiteYN: true,
+        ownerWebsite: "somewebsite.com"
+      });
+
+      assert.fileContent("LICENSE", /.*John Doe \(somewebsite\.com\).*/);
+    });
+
+    it("adds the owner's name, email address and website URL to the license file", async () => {
+      await runContext.withPrompts({
+        ownerName: "John Doe",
+        ownerEmailYN: true,
+        ownerEmail: "jdoe@example.com",
+        ownerWebsiteYN: true,
+        ownerWebsite: "somewebsite.com"
+      });
+
+      assert.fileContent(
+        "LICENSE",
+        /.*John Doe <jdoe@example\.com> \(somewebsite\.com\).*/
+      );
+    });
+  });
+
   describe("Library Project", () => {
     it("creates a library project with merged header placement", async () => {
       await runContext.withPrompts({

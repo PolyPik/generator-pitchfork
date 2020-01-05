@@ -3,6 +3,20 @@ const Generator = require("yeoman-generator");
 const yosay = require("yosay");
 const path = require("path");
 
+const licenses = [
+  { name: "Apache 2.0", value: "Apache-2.0" },
+  { name: "MIT", value: "MIT" },
+  { name: "Mozilla Public License 2.0", value: "MPL-2.0" },
+  { name: "BSD 2-Clause (FreeBSD) License", value: "BSD-2-Clause-FreeBSD" },
+  { name: "BSD 3-Clause (NewBSD) License", value: "BSD-3-Clause" },
+  { name: "Internet Systems Consortium (ISC) License", value: "ISC" },
+  { name: "GNU AGPL 3.0", value: "AGPL-3.0" },
+  { name: "GNU GPL 3.0", value: "GPL-3.0" },
+  { name: "GNU LGPL 3.0", value: "LGPL-3.0" },
+  { name: "Unlicense", value: "unlicense" },
+  { name: "No License (Copyrighted)", value: "UNLICENSED" }
+];
+
 module.exports = class extends Generator {
   prompting() {
     // Have Yeoman greet the user.
@@ -12,13 +26,55 @@ module.exports = class extends Generator {
       {
         type: "input",
         name: "projectName",
-        message: "Project Name:",
+        message: "What is the name of this project?",
         default: this.determineAppname()
       },
       {
         type: "input",
         name: "projectDescription",
-        message: "Project Description:"
+        message: "Please give a brief project description:"
+      },
+      {
+        type: "list",
+        name: "license",
+        message: "Which license do you want to use?",
+        choices: licenses,
+        default: "MIT"
+      },
+      {
+        type: "input",
+        name: "ownerName",
+        message: "Who is the project owner?",
+        default: this.user.git.name()
+      },
+      {
+        type: "confirm",
+        name: "ownerEmailYN",
+        message: "Would you like to provide the project owner's email address?",
+        default: false
+      },
+      {
+        type: "input",
+        name: "ownerEmail",
+        message: "What is the project owner's email address?",
+        default: this.user.git.email(),
+        when(answers) {
+          return answers.ownerEmailYN;
+        }
+      },
+      {
+        type: "confirm",
+        name: "ownerWebsiteYN",
+        message: "Would you like to provide the project owner's website URL?",
+        default: false
+      },
+      {
+        type: "input",
+        name: "ownerWebsite",
+        message: "What is the project owner's website URL?",
+        when(answers) {
+          return answers.ownerWebsiteYN;
+        }
       }
     ];
 
@@ -52,7 +108,7 @@ module.exports = class extends Generator {
         type: "confirm",
         name: "separateHeaders",
         message:
-          "Do you want to place the public headers in a separate directory?",
+          "Do you wish to place the public headers in a separate directory?",
         default: false,
         when(answers) {
           return answers.artifactType === "Library";
@@ -64,8 +120,15 @@ module.exports = class extends Generator {
 
     return this.prompt(infoPrompts)
       .then(props => {
-        // To access props later use this.props.someAnswer;
         this.props = props;
+
+        if (!props.ownerEmailYN) {
+          this.props.ownerEmail = "";
+        }
+
+        if (!props.ownerWebsiteYN) {
+          this.props.ownerWebsite = "";
+        }
 
         this.log("Project Config");
 
@@ -73,6 +136,13 @@ module.exports = class extends Generator {
       })
       .then(props => {
         this.props = { ...this.props, ...props };
+
+        this.composeWith(require.resolve("generator-license"), {
+          name: this.props.ownerName,
+          email: this.props.ownerEmail,
+          website: this.props.ownerWebsite,
+          license: this.props.license
+        });
       });
   }
 
