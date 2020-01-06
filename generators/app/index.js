@@ -36,7 +36,9 @@ module.exports = class extends Generator {
       {
         type: "input",
         name: "projectDescription",
-        message: "Please give a brief project description:"
+        message: "Please give a brief project description:",
+        default:
+          "This project was generated using the Yeoman Pitchfork generator."
       },
       {
         type: "list",

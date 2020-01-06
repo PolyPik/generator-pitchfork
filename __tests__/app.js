@@ -30,6 +30,15 @@ describe("generator-pitchfork:app", () => {
   });
 
   describe("Project Description", () => {
+    it("provides a default project description", async () => {
+      await runContext;
+
+      assert.fileContent(
+        "README.md",
+        /# \w+\n\nThis project was generated using the Yeoman Pitchfork generator\./
+      );
+    });
+
     it("uses the prompt answer as the project description", async () => {
       await runContext.withPrompts({
         projectName: "Test Project",
