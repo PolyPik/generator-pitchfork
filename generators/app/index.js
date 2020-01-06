@@ -1,7 +1,11 @@
 "use strict";
+const fs = require("fs");
+const path = require("path");
+const util = require("util");
 const Generator = require("yeoman-generator");
 const yosay = require("yosay");
-const path = require("path");
+
+const mkdir = util.promisify(fs.mkdir);
 
 const licenses = [
   { name: "Apache 2.0", value: "Apache-2.0" },
@@ -113,6 +117,13 @@ module.exports = class extends Generator {
         when(answers) {
           return answers.artifactType === "Library";
         }
+      },
+      {
+        type: "checkbox",
+        name: "optionalDirs",
+        message: "Which of these optional directories do you want to include?",
+        choices: ["tests", "examples", "external", "data", "tools", "docs"],
+        default: []
       }
     ];
 
@@ -152,7 +163,8 @@ module.exports = class extends Generator {
       projectDescription,
       artifactType,
       artifactName,
-      separateHeaders
+      separateHeaders,
+      optionalDirs
     } = this.props;
 
     this.fs.copyTpl(
@@ -181,5 +193,7 @@ module.exports = class extends Generator {
         this.destinationPath("src/main.cpp")
       );
     }
+
+    await Promise.all(optionalDirs.map(name => mkdir(name)));
   }
 };

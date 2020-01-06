@@ -140,4 +140,27 @@ describe("generator-pitchfork:app", () => {
       assert.file("src/main.cpp");
     });
   });
+
+  describe("Optional Directories", () => {
+    const optionalDirs = [
+      "tests",
+      "examples",
+      "external",
+      "data",
+      "tools",
+      "docs"
+    ];
+
+    it("doesn't create any the optional directories by default", async () => {
+      await runContext;
+
+      assert.noFile(optionalDirs);
+    });
+
+    it("creates the optional directories", async () => {
+      await runContext.withPrompts({ optionalDirs });
+
+      assert.file(optionalDirs);
+    });
+  });
 });
