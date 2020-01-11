@@ -1,11 +1,12 @@
 "use strict";
 const fs = require("fs");
-const path = require("path");
 const util = require("util");
 const Generator = require("yeoman-generator");
 const yosay = require("yosay");
 
 const mkdir = util.promisify(fs.mkdir);
+
+const { writeLibProjFiles, writeAppProjFiles } = require("../common-utils.js");
 
 const licenses = [
   { name: "Apache 2.0", value: "Apache-2.0" },
@@ -169,6 +170,10 @@ module.exports = class extends Generator {
       optionalDirs
     } = this.props;
 
+    const optionalDirsPromise = Promise.all(
+      optionalDirs.map(name => mkdir(name))
+    );
+
     this.fs.copyTpl(
       this.templatePath("README.md.ejs"),
       this.destinationPath("README.md"),
@@ -176,26 +181,11 @@ module.exports = class extends Generator {
     );
 
     if (artifactType === "Library") {
-      const headerDir = separateHeaders ? "include" : "src";
-
-      this.fs.copyTpl(
-        this.templatePath("lib.h.ejs"),
-        this.destinationPath(path.join(headerDir, `${artifactName}.h`)),
-        { headerGuardName: `${artifactName.replace("-", "_").toUpperCase()}_H` }
-      );
-
-      this.fs.copyTpl(
-        this.templatePath("lib.cpp.ejs"),
-        this.destinationPath(`src/${artifactName}.cpp`),
-        { headerName: `${artifactName}.h` }
-      );
+      writeLibProjFiles(this.fs, "", artifactName, separateHeaders);
     } else {
-      this.fs.copy(
-        this.templatePath("main.cpp"),
-        this.destinationPath("src/main.cpp")
-      );
+      writeAppProjFiles(this.fs, "");
     }
 
-    await Promise.all(optionalDirs.map(name => mkdir(name)));
+    await optionalDirsPromise;
   }
 };
