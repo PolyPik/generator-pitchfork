@@ -1,12 +1,6 @@
 "use strict";
-const fs = require("fs");
-const util = require("util");
-const Generator = require("yeoman-generator");
 const yosay = require("yosay");
-
-const mkdir = util.promisify(fs.mkdir);
-
-const { writeLibProjFiles, writeAppProjFiles } = require("../common-utils.js");
+const PitchforkGenerator = require("../base.js");
 
 const generatorSubmodule = require("../submodule/index.js");
 
@@ -24,7 +18,7 @@ const licenses = [
   { name: "No License (Copyrighted)", value: "UNLICENSED" }
 ];
 
-module.exports = class extends Generator {
+module.exports = class extends PitchforkGenerator {
   prompting() {
     // Have Yeoman greet the user.
     this.log(yosay("Please answer the following questions."));
@@ -163,7 +157,7 @@ module.exports = class extends Generator {
         return this.prompt(configPrompts);
       })
       .then(props => {
-        this.props = { ...this.props, ...props };
+        this.props = { ...this.props, ...props, fileRoot: "" };
 
         if (props.usingSubmodules) {
           this.composeWith({
@@ -182,19 +176,7 @@ module.exports = class extends Generator {
   }
 
   async writing() {
-    const {
-      projectName,
-      projectDescription,
-      usingSubmodules,
-      artifactType,
-      artifactName,
-      separateHeaders,
-      optionalDirs
-    } = this.props;
-
-    const optionalDirsPromise = Promise.all(
-      optionalDirs.map(name => mkdir(name))
-    );
+    const { projectName, projectDescription, usingSubmodules } = this.props;
 
     this.fs.copyTpl(
       this.templatePath("README.md.ejs"),
@@ -203,13 +185,7 @@ module.exports = class extends Generator {
     );
 
     if (!usingSubmodules) {
-      if (artifactType === "Library") {
-        writeLibProjFiles(this.fs, "", artifactName, separateHeaders);
-      } else {
-        writeAppProjFiles(this.fs, "");
-      }
+      await super.writing();
     }
-
-    await optionalDirsPromise;
   }
 };

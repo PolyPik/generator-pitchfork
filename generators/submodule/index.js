@@ -1,15 +1,9 @@
 "use strict";
-const fs = require("fs");
 const path = require("path");
-const util = require("util");
-const Generator = require("yeoman-generator");
 const yosay = require("yosay");
+const PitchforkGenerator = require("../base.js");
 
-const mkdir = util.promisify(fs.mkdir);
-
-const { writeLibProjFiles, writeAppProjFiles } = require("../common-utils.js");
-
-module.exports = class extends Generator {
+module.exports = class extends PitchforkGenerator {
   prompting() {
     // Have Yeoman greet the user.
     this.log(yosay(`Let's add a new submodule`));
@@ -48,30 +42,13 @@ module.exports = class extends Generator {
 
     return this.prompt(prompts).then(props => {
       this.props = props;
+      this.props.fileRoot = path.join("libs", this.props.subModuleName);
+      this.props.artifactName = this.props.subModuleName;
     });
   }
 
   async writing() {
-    const {
-      subModuleName,
-      artifactType,
-      separateHeaders,
-      optionalDirs
-    } = this.props;
-
-    const optionalDirsPromise = Promise.all(
-      optionalDirs.map(name => mkdir(name))
-    );
-
-    const subModuleRoot = path.join("libs", subModuleName);
-
-    if (artifactType === "Library") {
-      writeLibProjFiles(this.fs, subModuleRoot, subModuleName, separateHeaders);
-    } else {
-      writeAppProjFiles(this.fs, subModuleRoot);
-    }
-
-    await optionalDirsPromise;
+    await super.writing();
   }
 
   install() {
