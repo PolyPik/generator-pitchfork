@@ -66,17 +66,11 @@ module.exports = class extends PitchforkGenerator {
         }
       },
       {
-        type: "confirm",
-        name: "ownerWebsiteYN",
-        message: "Would you like to provide the project owner's website URL?",
-        default: false
-      },
-      {
         type: "input",
         name: "ownerWebsite",
-        message: "What is the project owner's website URL?",
-        when(answers) {
-          return answers.ownerWebsiteYN;
+        message: "What is the URL of the project owner's website?",
+        filter(val) {
+          return val ? val : "";
         }
       }
     ];
@@ -102,18 +96,13 @@ module.exports = class extends PitchforkGenerator {
         type: "input",
         name: "artifactName",
         message(answers) {
-          if (answers.artifactType === "Library") {
-            return "What's the name of the library artifact?";
-          }
+          const artifactTypeStr =
+            answers.artifactType === "Library" ? "library" : "executable";
 
-          return "What's the name of the executable artifact?";
+          return `What's the name of the ${artifactTypeStr} artifact?`;
         },
         default(answers) {
-          if (answers.artifactType === "Library") {
-            return "mylib";
-          }
-
-          return "myapp";
+          return answers.artifactType === "Library" ? "mylib" : "myapp";
         },
         when(answers) {
           return !answers.usingSubmodules;
@@ -146,10 +135,6 @@ module.exports = class extends PitchforkGenerator {
 
         if (!props.ownerEmailYN) {
           this.props.ownerEmail = "";
-        }
-
-        if (!props.ownerWebsiteYN) {
-          this.props.ownerWebsite = "";
         }
 
         this.log("Project Config");
