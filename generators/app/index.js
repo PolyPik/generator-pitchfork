@@ -8,6 +8,8 @@ const mkdir = util.promisify(fs.mkdir);
 
 const { writeLibProjFiles, writeAppProjFiles } = require("../common-utils.js");
 
+const generatorSubmodule = require("../submodule/index.js");
+
 const licenses = [
   { name: "Apache 2.0", value: "Apache-2.0" },
   { name: "MIT", value: "MIT" },
@@ -87,11 +89,20 @@ module.exports = class extends Generator {
 
     const configPrompts = [
       {
+        type: "confirm",
+        name: "usingSubmodules",
+        message: "Will this project be organized using submodules?",
+        default: false
+      },
+      {
         type: "list",
         name: "artifactType",
         message: "What type of artifact will this project produce?",
         choices: ["Library", "Application"],
-        default: "Library"
+        default: "Library",
+        when(answers) {
+          return !answers.usingSubmodules;
+        }
       },
       {
         type: "input",
@@ -109,6 +120,9 @@ module.exports = class extends Generator {
           }
 
           return "myapp";
+        },
+        when(answers) {
+          return !answers.usingSubmodules;
         }
       },
       {
@@ -118,7 +132,7 @@ module.exports = class extends Generator {
           "Do you wish to place the public headers in a separate directory?",
         default: false,
         when(answers) {
-          return answers.artifactType === "Library";
+          return !answers.usingSubmodules && answers.artifactType === "Library";
         }
       },
       {
@@ -151,6 +165,13 @@ module.exports = class extends Generator {
       .then(props => {
         this.props = { ...this.props, ...props };
 
+        if (props.usingSubmodules) {
+          this.composeWith({
+            Generator: generatorSubmodule,
+            path: require.resolve("../submodule")
+          });
+        }
+
         this.composeWith(require.resolve("generator-license"), {
           name: this.props.ownerName,
           email: this.props.ownerEmail,
@@ -164,6 +185,7 @@ module.exports = class extends Generator {
     const {
       projectName,
       projectDescription,
+      usingSubmodules,
       artifactType,
       artifactName,
       separateHeaders,
@@ -180,10 +202,12 @@ module.exports = class extends Generator {
       { projectName, projectDescription }
     );
 
-    if (artifactType === "Library") {
-      writeLibProjFiles(this.fs, "", artifactName, separateHeaders);
-    } else {
-      writeAppProjFiles(this.fs, "");
+    if (!usingSubmodules) {
+      if (artifactType === "Library") {
+        writeLibProjFiles(this.fs, "", artifactName, separateHeaders);
+      } else {
+        writeAppProjFiles(this.fs, "");
+      }
     }
 
     await optionalDirsPromise;

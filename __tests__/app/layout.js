@@ -3,6 +3,11 @@ const path = require("path");
 const assert = require("yeoman-assert");
 const helpers = require("yeoman-test");
 
+jest.mock("../../generators/submodule/index.js", () => {
+  const helpers = require("yeoman-test");
+  return helpers.createDummyGenerator();
+});
+
 describe("generator-pitchfork:app", () => {
   let runContext;
   const optionalDirs = [
@@ -48,6 +53,11 @@ describe("generator-pitchfork:app", () => {
 
       assert.noFile("include");
       assert.file("src/main.cpp");
+    });
+
+    it("creates a submodule project", async () => {
+      await runContext.withPrompts({ usingSubmodules: true });
+      assert.noFile("src");
     });
 
     it("creates the optional directories", async () => {
