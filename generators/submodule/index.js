@@ -50,8 +50,4 @@ module.exports = class extends PitchforkGenerator {
   async writing() {
     await super.writing();
   }
-
-  install() {
-    this.installDependencies();
-  }
 };
