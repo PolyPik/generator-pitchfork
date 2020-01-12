@@ -136,6 +136,7 @@ module.exports = class extends PitchforkGenerator {
             Generator: generatorSubmodule,
             path: require.resolve("../submodule")
           });
+          this.props.artifactType = null;
         }
 
         this.composeWith(require.resolve("generator-license"), {
@@ -152,7 +153,7 @@ module.exports = class extends PitchforkGenerator {
   }
 
   async writing() {
-    const { projectName, projectDescription, usingSubmodules } = this.props;
+    const { projectName, projectDescription } = this.props;
 
     this.fs.copyTpl(
       this.templatePath("README.md.ejs"),
@@ -160,8 +161,6 @@ module.exports = class extends PitchforkGenerator {
       { projectName, projectDescription }
     );
 
-    if (!usingSubmodules) {
-      await super.writing();
-    }
+    await super.writing();
   }
 };

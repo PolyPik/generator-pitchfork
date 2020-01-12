@@ -64,5 +64,11 @@ describe("generator-pitchfork:app", () => {
       await runContext.withPrompts({ optionalDirs });
       assert.file(optionalDirs);
     });
+
+    it("creates a submodule project with optional directories in the project root", async () => {
+      await runContext.withPrompts({ usingSubmodules: true, optionalDirs });
+      assert.noFile("src");
+      assert.file(optionalDirs);
+    });
   });
 });

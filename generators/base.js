@@ -40,7 +40,7 @@ module.exports = class PitchforkGenerator extends Generator {
 
       this.fs.write(headerPath, headerContents);
       this.fs.write(sourcePath, sourceContents);
-    } else {
+    } else if (artifactType === "Application") {
       const sourcePath = path.join(fileRoot, "src/main.cpp");
 
       const sourceContents = `#include <iostream>
