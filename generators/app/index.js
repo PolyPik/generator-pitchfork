@@ -88,6 +88,13 @@ module.exports = class extends PitchforkGenerator {
         default(answers) {
           return answers.artifactType === "Library" ? "mylib" : "myapp";
         },
+        validate(val) {
+          if (val === "") {
+            return "The artifact name cannot be blank.";
+          }
+
+          return true;
+        },
         when(answers) {
           return !answers.usingSubmodules;
         }

@@ -23,7 +23,14 @@ module.exports = class extends PitchforkGenerator {
       {
         type: "input",
         name: "subModuleName",
-        message: "What is the name of this submodule?"
+        message: "What is the name of the submodule?",
+        validate(val) {
+          if (val === "") {
+            return "The submodule name cannot be blank.";
+          }
+
+          return true;
+        }
       },
       {
         type: "list",
