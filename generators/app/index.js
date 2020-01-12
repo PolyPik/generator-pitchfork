@@ -55,10 +55,7 @@ module.exports = class extends PitchforkGenerator {
       {
         type: "input",
         name: "ownerWebsite",
-        message: "What is the URL of the project owner's website?",
-        filter(val) {
-          return val ? val : "";
-        }
+        message: "What is the URL of the project owner's website?"
       }
     ];
 

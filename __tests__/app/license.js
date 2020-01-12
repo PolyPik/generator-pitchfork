@@ -28,8 +28,7 @@ describe("generator-pitchfork:app", () => {
       async ({ email, website }) => {
         const promptAnswers = {
           ownerName: "John Doe",
-          ownerEmailYN: email,
-          ownerWebsiteYN: website
+          ownerEmailYN: email
         };
 
         let expectStr = "John Doe";
