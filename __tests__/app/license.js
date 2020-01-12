@@ -27,8 +27,7 @@ describe("generator-pitchfork:app", () => {
       "adds the owner's $info to the license file ",
       async ({ email, website }) => {
         const promptAnswers = {
-          ownerName: "John Doe",
-          ownerEmailYN: email
+          ownerName: "John Doe"
         };
 
         let expectStr = "John Doe";

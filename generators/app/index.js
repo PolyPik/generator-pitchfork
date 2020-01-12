@@ -38,24 +38,14 @@ module.exports = class extends PitchforkGenerator {
         default: this.user.git.name()
       },
       {
-        type: "confirm",
-        name: "ownerEmailYN",
-        message: "Would you like to provide the project owner's email address?",
-        default: false
-      },
-      {
         type: "input",
         name: "ownerEmail",
-        message: "What is the project owner's email address?",
-        default: this.user.git.email(),
-        when(answers) {
-          return answers.ownerEmailYN;
-        }
+        message: "(Optional) What is the project owner's email address?"
       },
       {
         type: "input",
         name: "ownerWebsite",
-        message: "What is the URL of the project owner's website?"
+        message: "(Optional) What is the URL of the project owner's website?"
       }
     ];
 
