@@ -17,7 +17,9 @@ module.exports = class PitchforkGenerator extends Generator {
     } = this.props;
 
     const optionalDirsPromise = Promise.all(
-      optionalDirs.map(name => mkdir(name))
+      optionalDirs.map(name =>
+        mkdir(path.join(fileRoot, name), { recursive: true })
+      )
     );
 
     if (artifactType === "Library") {

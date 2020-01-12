@@ -48,6 +48,6 @@ describe("generator-pitchfork:submodule", () => {
 
   it("creates the optional directories", async () => {
     await runContext.withPrompts({ optionalDirs });
-    assert.file(optionalDirs);
+    assert.file(optionalDirs.map(name => path.join("libs/test", name)));
   });
 });
