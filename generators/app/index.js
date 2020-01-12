@@ -109,7 +109,22 @@ module.exports = class extends PitchforkGenerator {
         type: "checkbox",
         name: "optionalDirs",
         message: "Which of these optional directories do you want to include?",
-        choices: ["tests", "examples", "external", "data", "tools", "docs"],
+        choices(answers) {
+          const choices = [
+            "tests",
+            "examples",
+            "external",
+            "data",
+            "tools",
+            "docs"
+          ];
+
+          if (answers.usingSubmodules) {
+            choices.push("extras");
+          }
+
+          return choices;
+        },
         default: []
       }
     ];
@@ -132,10 +147,13 @@ module.exports = class extends PitchforkGenerator {
         this.props = { ...this.props, ...props, fileRoot: "" };
 
         if (props.usingSubmodules) {
-          this.composeWith({
-            Generator: generatorSubmodule,
-            path: require.resolve("../submodule")
-          });
+          this.composeWith(
+            {
+              Generator: generatorSubmodule,
+              path: require.resolve("../submodule")
+            },
+            { extra: false }
+          );
           this.props.artifactType = null;
         }
 

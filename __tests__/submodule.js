@@ -50,4 +50,18 @@ describe("generator-pitchfork:submodule", () => {
     await runContext.withPrompts({ optionalDirs });
     assert.file(optionalDirs.map(name => path.join("libs/test", name)));
   });
+
+  it("creates an 'extra' submodule using prompts", async () => {
+    await runContext.withPrompts({ subModuleType: "Extra" });
+
+    assert.file("extras/test/src/test.h");
+    assert.file("extras/test/src/test.cpp");
+  });
+
+  it("creates an 'extra' submodule using options", async () => {
+    await runContext.withOptions({ extra: true });
+
+    assert.file("extras/test/src/test.h");
+    assert.file("extras/test/src/test.cpp");
+  });
 });
