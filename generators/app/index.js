@@ -147,6 +147,10 @@ module.exports = class extends PitchforkGenerator {
       });
   }
 
+  configuring() {
+    this.config.save();
+  }
+
   async writing() {
     const { projectName, projectDescription, usingSubmodules } = this.props;
 

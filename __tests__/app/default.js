@@ -43,5 +43,9 @@ describe("generator-pitchfork:app", () => {
     it("doesn't create any of the optional directories", async () => {
       assert.noFile(optionalDirs);
     });
+
+    it("adds a '.yo-rc.json' file to the project directory", async () => {
+      assert.file(".yo-rc.json");
+    });
   });
 });
