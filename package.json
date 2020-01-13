@@ -1,6 +1,6 @@
 {
   "name": "generator-pitchfork",
-  "version": "0.1.0",
+  "version": "1.0.0-beta",
   "description": "A Yeoman generator for creating C++ projects that follow the Pitchfork layout.",
   "homepage": "https://github.com/PolyPik/generator-pitchfork#readme",
   "author": {
