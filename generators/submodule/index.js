@@ -1,7 +1,9 @@
 "use strict";
 const path = require("path");
 const yosay = require("yosay");
+
 const PitchforkGenerator = require("../base.js");
+const { noBlankName } = require("../validation-helpers.js");
 
 module.exports = class extends PitchforkGenerator {
   constructor(args, opts) {
@@ -24,13 +26,7 @@ module.exports = class extends PitchforkGenerator {
         type: "input",
         name: "subModuleName",
         message: "What is the name of the submodule?",
-        validate(val) {
-          if (val === "") {
-            return "The submodule name cannot be blank.";
-          }
-
-          return true;
-        }
+        validate: noBlankName
       },
       {
         type: "list",

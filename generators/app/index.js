@@ -1,9 +1,11 @@
 "use strict";
 const yosay = require("yosay");
+const { licenses } = require("generator-license");
+
 const PitchforkGenerator = require("../base.js");
+const { noBlankName } = require("../validation-helpers.js");
 
 const generatorSubmodule = require("../submodule/index.js");
-const { licenses } = require("generator-license");
 
 module.exports = class extends PitchforkGenerator {
   prompting() {
@@ -78,13 +80,7 @@ module.exports = class extends PitchforkGenerator {
         default(answers) {
           return answers.artifactType === "Library" ? "mylib" : "myapp";
         },
-        validate(val) {
-          if (val === "") {
-            return "The artifact name cannot be blank.";
-          }
-
-          return true;
-        },
+        validate: noBlankName,
         when(answers) {
           return !answers.usingSubmodules;
         }
