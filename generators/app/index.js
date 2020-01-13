@@ -1,4 +1,5 @@
 "use strict";
+const chalk = require("chalk");
 const yosay = require("yosay");
 const { licenses } = require("generator-license");
 
@@ -9,8 +10,7 @@ const generatorSubmodule = require("../submodule/index.js");
 
 module.exports = class extends PitchforkGenerator {
   prompting() {
-    // Have Yeoman greet the user.
-    this.log(yosay("Please answer the following questions."));
+    this.log(yosay("Prepare thy Pitchforks!"));
 
     const infoPrompts = [
       {
@@ -51,7 +51,7 @@ module.exports = class extends PitchforkGenerator {
       }
     ];
 
-    const configPrompts = [
+    const structurePrompts = [
       {
         type: "confirm",
         name: "usingSubmodules",
@@ -119,19 +119,19 @@ module.exports = class extends PitchforkGenerator {
       }
     ];
 
-    this.log("Project Info");
+    this.log(chalk.blueBright("Project Info"));
 
     return this.prompt(infoPrompts)
       .then(props => {
         this.props = props;
 
-        if (!props.ownerEmailYN) {
+        if (!props.ownerEmail) {
           this.props.ownerEmail = "";
         }
 
-        this.log("Project Config");
+        this.log(chalk.blueBright("Project Structure"));
 
-        return this.prompt(configPrompts);
+        return this.prompt(structurePrompts);
       })
       .then(props => {
         this.props = { ...this.props, ...props, fileRoot: "" };
