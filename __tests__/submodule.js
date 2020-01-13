@@ -5,14 +5,7 @@ const helpers = require("yeoman-test");
 
 describe("generator-pitchfork:submodule", () => {
   let runContext;
-  const optionalDirs = [
-    "tests",
-    "examples",
-    "external",
-    "data",
-    "tools",
-    "docs"
-  ];
+  const optionalDirs = ["tests", "data", "examples", "docs"];
 
   beforeEach(() => {
     runContext = helpers
